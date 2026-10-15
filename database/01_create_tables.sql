@@ -1,7 +1,3 @@
--- Жұмыспен қамту орталығының ақпараттық жүйесі
--- ЗС №6: 1-файл. Деректер қорын және кестелерді құру (CREATE DATABASE, CREATE TABLE)
--- Microsoft SQL Server, T-SQL. Файлдарды 01 -> 05 ретімен орындаңыз.
-
 CREATE DATABASE EmploymentCenter;
 GO
 USE EmploymentCenter;

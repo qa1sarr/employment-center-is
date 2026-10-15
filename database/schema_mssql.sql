@@ -217,5 +217,3 @@ JOIN vacancies v     ON v.vacancy_id = a.vacancy_id
 LEFT JOIN resumes r  ON r.seeker_id = a.seeker_id
 LEFT JOIN match_results m ON m.resume_id = r.resume_id AND m.vacancy_id = v.vacancy_id;
 
---test3
-

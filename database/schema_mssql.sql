@@ -218,6 +218,3 @@ LEFT JOIN resumes r  ON r.seeker_id = a.seeker_id
 LEFT JOIN match_results m ON m.resume_id = r.resume_id AND m.vacancy_id = v.vacancy_id;
 
 
-INSERT INTO courses (name, description, duration_hours)
-VALUES (N'SQL негіздері', N'Деректер қорына кіріспе', 40);
---test2

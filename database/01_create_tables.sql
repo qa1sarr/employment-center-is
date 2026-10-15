@@ -100,4 +100,3 @@ CREATE TABLE notifications (
     message         NVARCHAR(MAX) NOT NULL,
     sent_at         DATETIME2 NOT NULL DEFAULT SYSDATETIME()
 );
---test

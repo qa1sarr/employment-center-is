@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <title>Жұмыспен қамту орталығы</title>
+  <style>
+    body { font-family: "Times New Roman", serif; margin: 24px; color: #000; }
+    nav a { margin-right: 14px; }
+    table { border-collapse: collapse; margin: 12px 0; }
+    th, td { border: 1px solid #000; padding: 4px 10px; text-align: left; }
+    .flash { border: 1px solid #000; padding: 6px 10px; margin: 8px 0; }
+    form.inline { display: inline; }
+  </style>
+</head>
+<body>
+  <h2>Жұмыспен қамту орталығының ақпараттық жүйесі</h2>
+  {% if user %}
+  <nav>
+    <a href="{{ url_for('web.vacancies') }}">Вакансиялар</a>
+    <a href="{{ url_for('web.applications') }}">Өтінімдер</a>
+    <a href="{{ url_for('web.courses') }}">Курстар</a>
+    <a href="{{ url_for('web.notifications') }}">Хабарламалар</a>
+    {% if user.role in ('specialist', 'admin') %}<a href="{{ url_for('web.reports') }}">Есеп</a>{% endif %}
+    <a href="{{ url_for('web.logout') }}">Шығу ({{ user.full_name }}, {{ user.role }})</a>
+  </nav>
+  <hr>
+  {% endif %}
+  {% for message in get_flashed_messages() %}<div class="flash">{{ message }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Хабарламалар</h3>
+<table>
+  <tr><th>Уақыты</th><th>Хабарлама</th></tr>
+  {% for n in notifications %}<tr><td>{{ n.sent_at }}</td><td>{{ n.message }}</td></tr>{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Өтінімдер</h3>
+<table>
+  <tr><th>Вакансия</th><th>Компания</th><th>Үміткер</th><th>Күні</th><th>Мәртебесі</th><th>Сәйкестік, %</th>
+  {% if user.role in ('employer', 'specialist', 'admin') %}<th>Мәртебені өзгерту</th>{% endif %}</tr>
+  {% for a in applications %}
+  <tr>
+    <td>{{ a.vacancy }}</td><td>{{ a.company }}</td><td>{{ a.applicant }}</td><td>{{ a.app_date }}</td>
+    <td>{{ a.status }}</td><td>{{ a.score if a.score is not none else '-' }}</td>
+    {% if user.role in ('employer', 'specialist', 'admin') %}
+    <td>
+      <form class="inline" method="post" action="{{ url_for('web.change_status', application_id=a.application_id) }}">
+        <select name="status">
+          {% for s in ('submitted', 'reviewed', 'accepted', 'rejected') %}
+          <option value="{{ s }}" {% if s == a.status %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <button>Сақтау</button>
+      </form>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

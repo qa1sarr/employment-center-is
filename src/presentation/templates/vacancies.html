@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Вакансиялар</h3>
+<form method="get">
+  Іздеу: <input name="q" value="{{ q }}"> <button type="submit">Іздеу</button>
+</form>
+<table>
+  <tr><th>Вакансия</th><th>Компания</th><th>Жалақы</th><th>Күйі</th><th>Тіркелгендер</th><th>Жұмысқа тұрды</th><th></th></tr>
+  {% for v in vacancies %}
+  <tr>
+    <td>{{ v.title }}</td><td>{{ v.company }}</td><td>{{ v.salary }}</td><td>{{ v.status }}</td>
+    <td>{{ v.applicants }}</td><td>{{ v.hired }}</td>
+    <td>
+      {% if user.role == 'job_seeker' and v.status == 'open' %}
+      <form class="inline" method="post" action="{{ url_for('web.apply', vacancy_id=v.vacancy_id) }}"><button>Өтінім беру</button></form>
+      {% endif %}
+      {% if user.role in ('employer', 'admin') and v.status == 'open' %}
+      <form class="inline" method="post" action="{{ url_for('web.close_vacancy', vacancy_id=v.vacancy_id) }}"><button>Жабу</button></form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% if user.role == 'employer' %}
+<h3>Жаңа вакансия</h3>
+<form method="post">
+  <p>Атауы: <input name="title"></p>
+  <p>Талаптар: <input name="requirements"></p>
+  <p>Жалақы: <input name="salary"></p>
+  <p><button type="submit">Жариялау</button></p>
+</form>
+{% endif %}
+{% endblock %}

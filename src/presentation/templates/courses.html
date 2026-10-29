@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Оқыту курстары</h3>
+<table>
+  <tr><th>Курс</th><th>Сипаттамасы</th><th>Сағат</th><th></th></tr>
+  {% for c in courses %}
+  <tr>
+    <td>{{ c.name }}</td><td>{{ c.description }}</td><td>{{ c.duration_hours }}</td>
+    <td>{% if user.role == 'job_seeker' %}
+      <form class="inline" method="post" action="{{ url_for('web.enroll', course_id=c.course_id) }}"><button>Жазылу</button></form>
+    {% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

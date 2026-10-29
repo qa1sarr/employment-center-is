@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Вакансиялар бойынша есеп</h3>
+<p>Вакансия: {{ report.total_vacancies }} · Тіркелгендер: {{ report.total_applicants }} · Жұмысқа тұрды: {{ report.total_hired }}</p>
+<table>
+  <tr><th>Вакансия</th><th>Компания</th><th>Күйі</th><th>Тіркелгендер</th><th>Жұмысқа тұрды</th></tr>
+  {% for r in report.rows %}
+  <tr><td>{{ r.title }}</td><td>{{ r.company }}</td><td>{{ r.status }}</td><td>{{ r.applicants }}</td><td>{{ r.hired }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

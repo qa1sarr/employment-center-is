@@ -1,8 +1,7 @@
 {% extends "base.html" %}
+{% from "_macros.html" import empty with context %}
+{% block heading %}Хабарламалар{% endblock %}
 {% block content %}
-<h3>Хабарламалар</h3>
-<table>
-  <tr><th>Уақыты</th><th>Хабарлама</th></tr>
-  {% for n in notifications %}<tr><td>{{ n.sent_at }}</td><td>{{ n.message }}</td></tr>{% endfor %}
-</table>
+<div class="card">{% if notifications %}<ul class="list">{% for n in notifications %}<li>{{ n.message }}<time>{{ n.sent_at|fdt }}</time></li>{% endfor %}</ul>
+{% else %}{{ empty("Хабарлама жоқ", "🔔") }}{% endif %}</div>
 {% endblock %}

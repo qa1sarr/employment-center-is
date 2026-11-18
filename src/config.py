@@ -1,9 +1,9 @@
-"""Баптаулар: SQL Server-ге қосылу жолы."""
 import os
 
 DB_SERVER = os.environ.get("DB_SERVER", r"BORIBEK-QAISAR\BORIBEK")
 DB_NAME = os.environ.get("DB_NAME", "EmploymentCenter")
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+LAB11_DEMO = os.environ.get("LAB11_DEMO", "") == "1"
 
 
 def connection_string() -> str:

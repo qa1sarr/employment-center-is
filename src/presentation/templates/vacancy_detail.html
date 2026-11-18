@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, vac_badge, app_badge, meter, empty, status_form with context %}
+{% set v = d.vacancy %}
+{% block heading %}{{ v.title }}{% endblock %}
+{% block content %}
+<div class="grid two">
+  <div class="card"><h2>Сипаттама</h2>
+    <dl class="kv"><dt>Компания</dt><dd>{{ v.company }}</dd><dt>Сала</dt><dd>{{ v.industry or '—' }}</dd>
+      <dt>Жалақы</dt><dd>{{ v.salary|money }}</dd><dt>Күй</dt><dd>{{ vac_badge(v.status) }}</dd>
+      <dt>Жарияланған</dt><dd>{{ v.published_at|fdate }}</dd><dt>Талаптар</dt><dd>{{ v.requirements or '—' }}</dd></dl>
+  </div>
+  <div class="card">
+    {% if user.role == 'job_seeker' %}<h2>Сіз үшін</h2>
+      <p>Сәйкестік: {{ meter(d.score) }}</p>
+      {% if d.resume_missing %}<div class="note">Түйіндемені толтырсаңыз, сәйкестік есептеледі. <a href="{{ url_for('web.resume') }}">Түйіндеме</a></div>{% endif %}
+      {% if d.applied %}<span class="badge b-reviewed">Өтінім берілген</span>
+      {% elif v.status == 'open' %}<form method="post" action="{{ url_for('web.apply', vacancy_id=v.vacancy_id) }}">{{ csrf() }}<button class="btn good">Өтінім беру</button></form>
+      {% else %}<span class="badge b-closed">Вакансия жабық</span>{% endif %}
+    {% else %}<h2>Басқару</h2>
+      <p class="muted">Өтінімдер: <b>{{ v.applicants }}</b> · Жұмысқа алынды: <b>{{ v.hired }}</b></p>
+      {% if d.can_manage %}<div class="actions"><a class="btn ghost" href="{{ url_for('web.vacancy_edit', vacancy_id=v.vacancy_id) }}">Өзгерту</a>
+        <form class="inline-form" method="post" action="{{ url_for('web.vacancy_close' if v.status == 'open' else 'web.vacancy_reopen', vacancy_id=v.vacancy_id) }}">{{ csrf() }}
+          <button class="btn danger">{{ 'Жабу' if v.status == 'open' else 'Қайта ашу' }}</button></form></div>{% endif %}
+    {% endif %}
+  </div>
+</div>
+{% if d.applicants is not none %}
+<div class="card"><h2>Үміткерлер</h2>
+{% if d.applicants %}<div class="table-wrap"><table><thead><tr><th>Үміткер</th><th>Күні</th><th>Сәйкестік</th><th>Мәртебе</th><th></th></tr></thead><tbody>
+  {% for a in d.applicants %}<tr><td>{{ a.applicant }}</td><td>{{ a.app_date|fdate }}</td><td>{{ meter(a.score) }}</td><td>{{ app_badge(a.status) }}</td><td>{{ status_form(a) }}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}{{ empty("Әзірге өтінім түскен жоқ") }}{% endif %}</div>
+{% endif %}
+{% endblock %}

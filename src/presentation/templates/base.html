@@ -1,31 +1,45 @@
+{% from "_macros.html" import csrf with context %}
 <!doctype html>
 <html lang="kk">
 <head>
   <meta charset="utf-8">
-  <title>Жұмыспен қамту орталығы</title>
-  <style>
-    body { font-family: "Times New Roman", serif; margin: 24px; color: #000; }
-    nav a { margin-right: 14px; }
-    table { border-collapse: collapse; margin: 12px 0; }
-    th, td { border: 1px solid #000; padding: 4px 10px; text-align: left; }
-    .flash { border: 1px solid #000; padding: 6px 10px; margin: 8px 0; }
-    form.inline { display: inline; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Жұмыспен қамту орталығы{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h2>Жұмыспен қамту орталығының ақпараттық жүйесі</h2>
+{% if user %}
+<input type="checkbox" id="nav-toggle" class="nav-toggle">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">🏢</div><div><b>Жұмыспен қамту</b><span>ақпараттық жүйесі</span></div></div>
+  <ul class="menu">
+    {% for endpoint, label, icon in menu %}
+    <li><a href="{{ url_for(endpoint) }}" class="{{ 'active' if request.endpoint == endpoint }}"><span class="ico">{{ icon }}</span>{{ label }}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="side-user">
+    <div class="avatar">{{ user.full_name|initials }}</div>
+    <div class="who"><b>{{ user.full_name }}</b><span>{{ ROLE_NAMES[user.role] }}</span></div>
+  </div>
+  <a class="btn ghost" style="margin-top:12px;justify-content:center" href="{{ url_for('web.logout') }}">Шығу</a>
+</aside>
+{% endif %}
+<div class="main {{ '' if user else 'no-side' }}">
   {% if user %}
-  <nav>
-    <a href="{{ url_for('web.vacancies') }}">Вакансиялар</a>
-    <a href="{{ url_for('web.applications') }}">Өтінімдер</a>
-    <a href="{{ url_for('web.courses') }}">Курстар</a>
-    <a href="{{ url_for('web.notifications') }}">Хабарламалар</a>
-    {% if user.role in ('specialist', 'admin') %}<a href="{{ url_for('web.reports') }}">Есеп</a>{% endif %}
-    <a href="{{ url_for('web.logout') }}">Шығу ({{ user.full_name }}, {{ user.role }})</a>
-  </nav>
-  <hr>
+  <header class="topbar">
+    <label for="nav-toggle" class="burger">☰</label>
+    <h1>{% block heading %}{% endblock %}</h1><span class="grow"></span>
+    <span class="role-pill">{{ ROLE_NAMES[user.role] }}</span>
+  </header>
+  {% if demo and login_mode %}
+  <p class="demo-banner {{ 'vuln' if login_mode == 'vulnerable' else 'safe' }}">
+    Lab 11 демо: кіру режимі — {{ 'ОСАЛ (SQL Injection мүмкін)' if login_mode == 'vulnerable' else 'ҚАУІПСІЗ (параметрлі сұраныс)' }}</p>
   {% endif %}
-  {% for message in get_flashed_messages() %}<div class="flash">{{ message }}</div>{% endfor %}
-  {% block content %}{% endblock %}
+  {% endif %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+  {% endwith %}
+  <main class="content">{% block content %}{% endblock %}</main>
+</div>
 </body>
 </html>

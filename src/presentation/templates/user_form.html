@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf with context %}
+{% block heading %}Жаңа пайдаланушы{% endblock %}
+{% block content %}
+<div class="card" style="max-width:760px"><form method="post" action="{{ url_for('web.user_create') }}">{{ csrf() }}
+  <div class="form-grid">
+    <div><label>Аты-жөні</label><input type="text" name="full_name" value="{{ form.get('full_name', '') }}" required></div>
+    <div><label>Email</label><input type="text" name="email" value="{{ form.get('email', '') }}" required></div>
+    <div><label>Телефон</label><input type="text" name="phone" value="{{ form.get('phone', '') }}"></div>
+    <div><label>Құпиясөз</label><input type="password" name="password" required></div>
+    <div class="full"><label>Рөлі</label><select name="role">{% for k, v in ROLE_NAMES.items() %}<option value="{{ k }}" {{ 'selected' if form.get('role') == k }}>{{ v }}</option>{% endfor %}</select></div>
+    <div><label>Білімі (іздеуші)</label><input type="text" name="education" value="{{ form.get('education', '') }}"></div>
+    <div><label>Дағдылар (іздеуші)</label><input type="text" name="skills" value="{{ form.get('skills', '') }}"></div>
+    <div><label>Компания (жұмыс беруші)</label><input type="text" name="company_name" value="{{ form.get('company_name', '') }}"></div>
+    <div><label>Сала (жұмыс беруші)</label><input type="text" name="industry" value="{{ form.get('industry', '') }}"></div>
+    <div><label>Бөлім (маман)</label><input type="text" name="department" value="{{ form.get('department', '') }}"></div>
+    <div><label>Деңгей (әкімші)</label><input type="number" min="1" name="access_level" value="{{ form.get('access_level', 1) }}"></div>
+  </div>
+  <p class="actions"><button class="btn" type="submit">Қосу</button><a class="btn ghost" href="{{ url_for('web.users') }}">Болдырмау</a></p>
+</form></div>
+{% endblock %}

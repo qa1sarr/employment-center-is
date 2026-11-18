@@ -1,4 +1,4 @@
-from .errors import BusinessError, PermissionDenied
+from .errors import BusinessError, NotFoundError, PermissionDenied
 from .permissions import require_role
 
 STATUSES = ("submitted", "reviewed", "accepted", "rejected")
@@ -26,7 +26,7 @@ class ApplicationService:
         # 2. Вакансия бар және ашық па?
         vacancy = self.vacancies.get(vacancy_id)
         if vacancy is None:
-            raise BusinessError("Вакансия табылмады")
+            raise NotFoundError("Вакансия табылмады")
         if vacancy["status"] != "open":
             raise BusinessError("Вакансия жабық")
         # 3. Қайталанбайтынын тексеру
@@ -37,7 +37,7 @@ class ApplicationService:
         # 5. Сәйкестік баллын есептеп, сақтау
         score = None
         resume = self.resumes.get_by_seeker(user["user_id"])
-        if resume:
+        if resume and resume.get("resume_id") is not None:
             score = self.matching.score(resume["skills"], vacancy["requirements"])
             self.resumes.save_match(
                 resume["resume_id"], vacancy_id, score, self.matching.MODEL_VERSION
@@ -56,7 +56,7 @@ class ApplicationService:
             raise BusinessError("Белгісіз мәртебе")
         application = self.applications.get(application_id)
         if application is None:
-            raise BusinessError("Өтінім табылмады")
+            raise NotFoundError("Өтінім табылмады")
         if user["role"] == "employer" and application["employer_id"] != user["user_id"]:
             raise PermissionDenied("Бұл сіздің вакансияңыздың өтініміне жатпайды")
         self.applications.update_status(application_id, new_status)

@@ -1,4 +1,3 @@
-# secure_app.py — қауіпсіз іздеу бағдарламасы (параметрленген сұраныс)
 from lab11.db_setup import create_demo_db
 from lab11.secure_search import search_secure
 

@@ -1,11 +1,17 @@
 {% extends "base.html" %}
+{% from "_macros.html" import vac_badge, empty with context %}
+{% block heading %}Есептер{% endblock %}
 {% block content %}
-<h3>Вакансиялар бойынша есеп</h3>
-<p>Вакансия: {{ report.total_vacancies }} · Тіркелгендер: {{ report.total_applicants }} · Жұмысқа тұрды: {{ report.total_hired }}</p>
-<table>
-  <tr><th>Вакансия</th><th>Компания</th><th>Күйі</th><th>Тіркелгендер</th><th>Жұмысқа тұрды</th></tr>
-  {% for r in report.rows %}
-  <tr><td>{{ r.title }}</td><td>{{ r.company }}</td><td>{{ r.status }}</td><td>{{ r.applicants }}</td><td>{{ r.hired }}</td></tr>
-  {% endfor %}
-</table>
+<div class="tiles"><div class="tile"><div class="val">{{ report.total_vacancies }}</div><div class="lbl">Вакансиялар</div></div>
+<div class="tile"><div class="val">{{ report.total_applicants }}</div><div class="lbl">Өтінімдер</div></div>
+<div class="tile"><div class="val">{{ report.total_hired }}</div><div class="lbl">Жұмысқа алынды</div></div></div>
+<div class="card"><h2>Салалар бойынша</h2>
+{% set mx = (report.industries|map(attribute='applications')|max) if report.industries else 0 %}
+{% for i in report.industries %}<div class="bar-row" style="grid-template-columns:160px 1fr 120px"><span>{{ i.industry or '—' }}</span>
+  <div class="track"><div class="fill" style="width: {{ (i.applications * 100 / mx)|round|int if mx else 0 }}%"></div></div>
+  <span class="small muted">{{ i.vacancies }} вак. · {{ i.applications }} өт. · {{ i.hired }} алынды</span></div>{% endfor %}</div>
+<div class="card"><h2>Вакансиялар бойынша</h2>
+{% if report.rows %}<div class="table-wrap"><table><thead><tr><th>Вакансия</th><th>Компания</th><th>Күй</th><th class="num">Өтінім</th><th class="num">Алынды</th></tr></thead><tbody>
+{% for v in report.rows %}<tr><td>{{ v.title }}</td><td>{{ v.company }}</td><td>{{ vac_badge(v.status) }}</td><td class="num">{{ v.applicants }}</td><td class="num">{{ v.hired }}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}{{ empty("Деректер жоқ", "📊") }}{% endif %}</div>
 {% endblock %}

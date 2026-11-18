@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf with context %}
+{% block heading %}{{ 'Вакансияны өзгерту' if v else 'Жаңа вакансия' }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:760px">
+<form method="post" action="{{ url_for('web.vacancy_update', vacancy_id=v.vacancy_id) if v else url_for('web.vacancy_create') }}">{{ csrf() }}
+  <div class="form-grid">
+    <div class="full"><label>Атауы</label><input type="text" name="title" value="{{ form.get('title', '') }}" required></div>
+    <div class="full"><label>Талаптар</label><textarea name="requirements">{{ form.get('requirements') or '' }}</textarea>
+      <div class="hint">Дағдыларды үтір арқылы жазыңыз — сәйкестік осы бойынша есептеледі</div></div>
+    <div><label>Жалақы (₸)</label><input type="text" name="salary" value="{{ form.get('salary', '') }}" required></div>
+  </div>
+  <p class="actions"><button class="btn" type="submit">Сақтау</button><a class="btn ghost" href="{{ url_for('web.vacancies') }}">Болдырмау</a></p>
+</form></div>
+{% endblock %}

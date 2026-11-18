@@ -12,8 +12,11 @@ SQL Injection шабуылының механизмін зерттеу және 
 | `vulnerable_search.py` | ОСАЛ іздеу: сұраныс мәтінді біріктіру арқылы құрылады |
 | `secure_search.py` | ҚАУІПСІЗ іздеу: параметрленген сұраныс (`?`) |
 | `vulnerable_app.py` / `secure_app.py` | `input()` арқылы интерактивті іздеу |
+| `auth.py` | Логин: ОСАЛ және ҚАУІПСІЗ нұсқа (пароль SHA-256 хэшімен) |
+| `login_app.py` | Терезелі қосымша: логин + пароль → интерфейс (іздеу) |
+| `login_cli.py` | Сол қосымшаның консольдік нұсқасы |
 | `compare.py` | Бірдей енгізулерді екі нұсқаға беріп салыстыру |
-| `test_sql_injection.py` | 9 unittest |
+| `test_sql_injection.py`, `test_login.py` | 14 unittest |
 
 ## Іске қосу
 Репо түбірінен:
@@ -21,8 +24,20 @@ SQL Injection шабуылының механизмін зерттеу және 
 python -m lab11.vulnerable_app
 python -m lab11.secure_app
 python -m lab11.compare
-python -m unittest lab11.test_sql_injection -v
+python -m unittest discover -s lab11 -t . -p "test_*.py" -v
+python -m lab11.login_app      # терезелі логин → интерфейс
+python -m lab11.login_cli      # сол, консольде
 ```
+
+## Логин демосы
+Демо-аккаунттар: `aigerim@mail.kz` / `123456`, `aidos@enbek.kz` / `admin123`.
+
+| Логин өрісіне | ОСАЛ режим | ҚАУІПСІЗ режим |
+|---|---|---|
+| `aigerim@mail.kz` + `123456` | кіреді | кіреді |
+| `aigerim@mail.kz` + `99999` | қате пароль | қате пароль |
+| `aidos@enbek.kz' --` + кез келген пароль | админ болып кіреді | қате пароль |
+| `' OR 1=1 --` + кез келген пароль | бірінші пайдаланушы болып кіреді | қате пароль |
 
 ## Тексеру енгізулері
 | Енгізу | Осал нұсқа | Қауіпсіз нұсқа |

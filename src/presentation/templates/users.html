@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, empty with context %}
+{% block heading %}Пайдаланушылар{% endblock %}
+{% block content %}
+<form class="toolbar" method="get"><select name="role" onchange="this.form.submit()"><option value="">Барлық рөл</option>
+  {% for k, v in ROLE_NAMES.items() %}<option value="{{ k }}" {{ 'selected' if role == k }}>{{ v }}</option>{% endfor %}</select>
+  <span style="flex:1"></span><a class="btn" href="{{ url_for('web.user_new') }}">+ Пайдаланушы қосу</a></form>
+<div class="card">
+{% if users %}<div class="table-wrap"><table><thead><tr><th>Аты-жөні</th><th>Рөлі</th><th>Телефон</th><th>Тіркелген</th><th>Жаңа құпиясөз</th></tr></thead><tbody>
+{% for u in users %}<tr><td><b>{{ u.full_name }}</b><span class="sub">{{ u.email }}</span></td><td><span class="role-pill">{{ ROLE_NAMES[u.role] }}</span></td>
+  <td>{{ u.phone or '—' }}</td><td>{{ u.created_at|fdate }}</td>
+  <td><form class="inline-form" method="post" action="{{ url_for('web.user_password', user_id=u.user_id) }}">{{ csrf() }}
+    <input type="password" name="new" placeholder="≥ 6 таңба" style="width:130px" required><button class="btn sm ghost">Орнату</button></form></td></tr>{% endfor %}
+</tbody></table></div>{% else %}{{ empty("Пайдаланушы жоқ", "👥") }}{% endif %}</div>
+{% endblock %}

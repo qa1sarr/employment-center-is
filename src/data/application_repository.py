@@ -1,6 +1,6 @@
 _LIST_SQL = (
-    "SELECT a.application_id, v.title AS vacancy, e.company_name AS company, "
-    "       u.full_name AS applicant, a.status, a.app_date, m.score "
+    "SELECT a.application_id, a.seeker_id, v.vacancy_id, v.title AS vacancy, "
+    "       e.company_name AS company, u.full_name AS applicant, a.status, a.app_date, m.score "
     "FROM applications a "
     "JOIN vacancies v ON v.vacancy_id = a.vacancy_id "
     "JOIN employers e ON e.user_id = v.employer_id "
@@ -21,6 +21,12 @@ class ApplicationRepository:
             (seeker_id, vacancy_id),
         )
         return bool(rows)
+
+    def applied_vacancy_ids(self, seeker_id: int) -> set:
+        rows = self.db.query(
+            "SELECT vacancy_id FROM applications WHERE seeker_id = ?", (seeker_id,)
+        )
+        return {r["vacancy_id"] for r in rows}
 
     def create(self, seeker_id: int, vacancy_id: int) -> int:
         return self.db.execute(
@@ -46,11 +52,14 @@ class ApplicationRepository:
             (status, application_id),
         )
 
-    def list_for_seeker(self, seeker_id: int):
+    def list_for_seeker(self, seeker_id: int) -> list:
         return self.db.query(_LIST_SQL + "WHERE a.seeker_id = ? " + _ORDER, (seeker_id,))
 
-    def list_for_employer(self, employer_id: int):
+    def list_for_employer(self, employer_id: int) -> list:
         return self.db.query(_LIST_SQL + "WHERE v.employer_id = ? " + _ORDER, (employer_id,))
 
-    def list_all(self):
+    def list_for_vacancy(self, vacancy_id: int) -> list:
+        return self.db.query(_LIST_SQL + "WHERE v.vacancy_id = ? " + _ORDER, (vacancy_id,))
+
+    def list_all(self) -> list:
         return self.db.query(_LIST_SQL + _ORDER)

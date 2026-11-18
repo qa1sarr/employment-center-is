@@ -1,9 +1,46 @@
 {% extends "base.html" %}
+{% from "_macros.html" import csrf with context %}
+{% block title %}Кіру — Жұмыспен қамту орталығы{% endblock %}
 {% block content %}
-<h3>Жүйеге кіру</h3>
-<form method="post">
-  <p>Email: <input name="email" type="text"></p>
-  <p>Құпиясөз: <input name="password" type="password"></p>
-  <p><button type="submit">Кіру</button></p>
-</form>
+<div class="auth-shell" style="margin:-26px -28px;width:calc(100% + 56px)">
+  <section class="auth-hero">
+    <div class="logo">🏢</div>
+    <h1>Жұмыспен қамту орталығының ақпараттық жүйесі</h1>
+    <p>Вакансиялар, түйіндемелер, өтінімдер және оқу курстары — бір жерде.</p>
+    <ul class="features">
+      <li>💼 Вакансияларды іздеу және өтінім беру</li>
+      <li>🎯 Түйіндеме мен вакансияның сәйкестігі</li>
+      <li>🎓 Кәсіби оқу курстары</li>
+      <li>🔐 Әр рөлге — өз құқығы</li>
+    </ul>
+  </section>
+  <section class="auth-form-wrap">
+    <div class="auth-card">
+      <div class="card">
+        <h2>Жүйеге кіру</h2><p class="muted">Email және құпиясөзді енгізіңіз</p>
+        <form method="post" autocomplete="off">
+          {{ csrf() }}
+          <div class="field"><label for="email">Email</label><input type="text" id="email" name="email" placeholder="name@mail.kz" required></div>
+          <div class="field"><label for="password">Құпиясөз</label><input type="password" id="password" name="password" required></div>
+          {% if forced_mode %}
+          <div class="demo-box"><h3>{{ '⚠ ОСАЛ нұсқа: SQL Injection жұмыс істейді' if forced_mode == 'vulnerable' else '🔒 ҚАУІПСІЗ нұсқа: параметрлі сұраныс' }}</h3></div>
+          {% elif demo %}
+          <div class="demo-box">
+            <h3>🧪 Lab 11 демо режимі</h3>
+            <label class="radio"><input type="radio" name="mode" value="vulnerable" checked> ОСАЛ (SQL Injection)</label>
+            <label class="radio"><input type="radio" name="mode" value="secure"> ҚАУІПСІЗ (параметрлі)</label>
+          </div>
+          {% endif %}
+          <button class="btn" type="submit">Кіру</button>
+        </form>
+        <div class="demo-box" style="border-color:#93c5fd;background:#eff6ff">
+          <h3 style="color:#1e40af">Тест тіркелгілері (құпиясөз: 123456)</h3>
+          <table class="demo-accounts">
+            {% for role, email in demo_accounts %}<tr><td>{{ ROLE_NAMES[role] }}</td><td>{{ email }}</td></tr>{% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 {% endblock %}

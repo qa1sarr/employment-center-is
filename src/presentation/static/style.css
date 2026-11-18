@@ -1,0 +1,235 @@
+/* Жұмыспен қамту орталығы — интерфейс стилі (сыртқы кітапханасыз) */
+:root {
+  --bg: #f1f4f9; --card: #ffffff; --ink: #0f172a; --muted: #64748b; --line: #e2e8f0;
+  --primary: #2563eb; --primary-d: #1d4ed8; --primary-l: #dbeafe;
+  --nav: #0b1220; --nav-2: #131c31; --nav-ink: #cbd5e1;
+  --ok: #15803d; --ok-l: #dcfce7; --warn: #b45309; --warn-l: #fef3c7;
+  --bad: #b91c1c; --bad-l: #fee2e2; --info: #1d4ed8; --info-l: #dbeafe; --gray-l: #e2e8f0;
+  --radius: 14px; --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+}
+* { box-sizing: border-box; }
+html { font-size: 16px; }
+body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  background: var(--bg); color: var(--ink); line-height: 1.5; }
+a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+h1, h2, h3 { margin: 0; line-height: 1.25; }
+.muted { color: var(--muted); } .small { font-size: .85rem; } .right { text-align: right; }
+
+/* ---------- қолданба қаңқасы ---------- */
+.nav-toggle { display: none; }
+.sidebar { position: fixed; inset: 0 auto 0 0; width: 260px; background: linear-gradient(180deg, var(--nav), var(--nav-2));
+  color: var(--nav-ink); display: flex; flex-direction: column; padding: 20px 14px; z-index: 30; }
+.brand { display: flex; gap: 12px; align-items: center; padding: 4px 8px 20px; color: #fff; }
+.brand .logo { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 22px;
+  background: linear-gradient(135deg, #3b82f6, #22d3ee); }
+.brand b { display: block; font-size: 1rem; } .brand span { font-size: .75rem; color: #94a3b8; }
+.menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; overflow-y: auto; }
+.menu a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; color: var(--nav-ink);
+  font-size: .95rem; transition: background .15s, color .15s; }
+.menu a:hover { background: rgba(255,255,255,.07); color: #fff; text-decoration: none; }
+.menu a.active { background: var(--primary); color: #fff; box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+.menu .ico { width: 22px; text-align: center; }
+.side-user { margin-top: auto; display: flex; gap: 10px; align-items: center; padding: 12px; border-radius: 12px;
+  background: rgba(255,255,255,.06); }
+.side-user .who { min-width: 0; } .side-user b { display: block; color: #fff; font-size: .9rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side-user span { font-size: .75rem; color: #94a3b8; }
+.avatar { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 700;
+  color: #fff; background: linear-gradient(135deg, #6366f1, #3b82f6); font-size: .85rem; }
+.main { margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
+.main.no-side { margin-left: 0; }
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; padding: 14px 28px;
+  background: rgba(241,244,249,.9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.topbar h1 { font-size: 1.35rem; } .topbar .grow { flex: 1; }
+.burger { display: none; cursor: pointer; font-size: 1.4rem; padding: 4px 8px; border-radius: 8px; }
+.content { padding: 26px 28px 48px; max-width: 1280px; width: 100%; }
+.scrim { display: none; }
+
+/* ---------- карточкалар, тақырыптар ---------- */
+.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; }
+.card + .card, .section { margin-top: 22px; }
+.card h2 { font-size: 1.08rem; margin-bottom: 14px; }
+.page-head { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 20px; }
+.page-head .grow { flex: 1; } .page-head h2 { font-size: 1.15rem; }
+.grid { display: grid; gap: 22px; } .grid.two { grid-template-columns: 1.4fr 1fr; }
+.grid.even { grid-template-columns: 1fr 1fr; }
+.tiles { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 22px; }
+.tile { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px;
+  border-left: 5px solid var(--primary); }
+.tile:nth-child(2) { border-color: #16a34a; } .tile:nth-child(3) { border-color: #f59e0b; }
+.tile:nth-child(4) { border-color: #8b5cf6; }
+.tile .val { font-size: 2rem; font-weight: 700; letter-spacing: -.02em; } .tile .lbl { color: var(--muted); font-size: .88rem; }
+.hero { background: linear-gradient(120deg, #1e3a8a, #2563eb 55%, #06b6d4); color: #fff; border-radius: var(--radius);
+  padding: 24px 28px; margin-bottom: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px; box-shadow: var(--shadow); }
+.hero h2 { font-size: 1.4rem; } .hero p { margin: 4px 0 0; color: #dbeafe; } .hero .grow { flex: 1; }
+
+/* ---------- кестелер ---------- */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+th { text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
+  padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tbody tr:hover { background: #f8fafc; } tbody tr:last-child td { border-bottom: 0; }
+td .sub { display: block; color: var(--muted); font-size: .82rem; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.empty { text-align: center; padding: 36px 12px; color: var(--muted); }
+.empty .big { font-size: 2rem; display: block; margin-bottom: 6px; }
+
+/* ---------- белгілер, прогресс ---------- */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+.b-submitted { background: var(--info-l); color: var(--info); } .b-reviewed { background: var(--warn-l); color: var(--warn); }
+.b-accepted, .b-open { background: var(--ok-l); color: var(--ok); } .b-rejected { background: var(--bad-l); color: var(--bad); }
+.b-closed { background: var(--gray-l); color: #475569; }
+.role { background: rgba(255,255,255,.14); color: #fff; padding: 2px 10px; border-radius: 999px; font-size: .75rem; }
+.role-pill { background: var(--primary-l); color: var(--primary-d); padding: 3px 12px; border-radius: 999px; font-size: .8rem; font-weight: 600; }
+.meter { display: inline-block; width: 70px; height: 8px; background: var(--gray-l); border-radius: 99px; overflow: hidden;
+  vertical-align: middle; margin-right: 8px; }
+.meter i { display: block; height: 100%; border-radius: 99px; } .meter.hi i { background: #16a34a; }
+.meter.mid i { background: #f59e0b; } .meter.lo i { background: #ef4444; }
+.bar-row { display: grid; grid-template-columns: 120px 1fr 40px; gap: 12px; align-items: center; margin: 10px 0; font-size: .9rem; }
+.track { height: 12px; background: var(--gray-l); border-radius: 99px; overflow: hidden; }
+.fill { height: 100%; border-radius: 99px; background: var(--primary); }
+.fill.f-submitted { background: #3b82f6; } .fill.f-reviewed { background: #f59e0b; }
+.fill.f-accepted { background: #16a34a; } .fill.f-rejected { background: #ef4444; }
+
+/* ---------- батырмалар, формалар ---------- */
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 10px; border: 1px solid transparent;
+  font: inherit; font-weight: 600; font-size: .92rem; cursor: pointer; background: var(--primary); color: #fff; transition: .15s; }
+.btn:hover { background: var(--primary-d); text-decoration: none; color: #fff; }
+.btn.ghost { background: #fff; color: var(--ink); border-color: var(--line); } .btn.ghost:hover { background: #f8fafc; color: var(--ink); }
+.btn.good { background: #16a34a; } .btn.good:hover { background: #15803d; }
+.btn.danger { background: #fff; color: var(--bad); border-color: #fecaca; } .btn.danger:hover { background: var(--bad-l); color: var(--bad); }
+.btn.sm { padding: 5px 11px; font-size: .82rem; border-radius: 8px; }
+.inline-form { display: inline-flex; gap: 6px; align-items: center; margin: 0; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 5px; color: #334155; }
+input[type=text], input[type=email], input[type=password], input[type=number], textarea, select {
+  width: 100%; padding: 10px 12px; font: inherit; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: var(--ink); }
+input:focus, textarea:focus, select:focus { outline: 3px solid var(--primary-l); border-color: var(--primary); }
+textarea { min-height: 110px; resize: vertical; } select.sm { width: auto; padding: 5px 8px; font-size: .85rem; }
+.form-grid { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; } .form-grid .full { grid-column: 1 / -1; }
+.hint { color: var(--muted); font-size: .8rem; margin-top: 4px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+.toolbar input[type=text] { max-width: 340px; } .toolbar select { width: auto; }
+.kv { display: grid; grid-template-columns: 170px 1fr; gap: 10px 16px; margin: 0; } .kv dt { color: var(--muted); }
+.kv dd { margin: 0; font-weight: 500; }
+.note { padding: 12px 14px; border-radius: 10px; background: var(--warn-l); color: #7c2d12; margin-bottom: 16px; font-size: .92rem; }
+.list { list-style: none; margin: 0; padding: 0; } .list li { padding: 11px 0; border-bottom: 1px solid var(--line); }
+.list li:last-child { border-bottom: 0; } .list time { display: block; color: var(--muted); font-size: .78rem; }
+
+/* ---------- хабарландырулар ---------- */
+.flash { margin: 18px 28px 0; padding: 12px 16px; border-radius: 12px; font-weight: 500; border: 1px solid; }
+.flash.ok { background: var(--ok-l); color: var(--ok); border-color: #bbf7d0; }
+.flash.error { background: var(--bad-l); color: var(--bad); border-color: #fecaca; }
+.demo-banner { margin: 0; padding: 8px 28px; font-size: .85rem; font-weight: 600; background: #fff7ed; color: #9a3412; border-bottom: 1px solid #fed7aa; }
+.demo-banner.vuln { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+.demo-banner.safe { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+
+/* ---------- кіру беті ---------- */
+.auth-shell { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; }
+.auth-hero { background: radial-gradient(1200px 600px at 10% 0%, #2563eb 0%, #1e3a8a 45%, #0b1220 100%); color: #fff;
+  padding: 56px 64px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
+.auth-hero .logo { font-size: 44px; } .auth-hero h1 { font-size: 2.1rem; max-width: 520px; }
+.auth-hero p { color: #bfdbfe; max-width: 480px; margin: 0; }
+.features { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 10px; color: #dbeafe; }
+.auth-form-wrap { display: grid; place-items: center; padding: 32px; }
+.auth-card { width: 100%; max-width: 420px; }
+.auth-card h2 { font-size: 1.5rem; margin-bottom: 4px; } .auth-card .field { margin-top: 16px; }
+.auth-card .btn { width: 100%; justify-content: center; margin-top: 22px; padding: 12px; }
+.demo-box { margin-top: 22px; padding: 14px; border: 1px dashed #f59e0b; border-radius: 12px; background: #fffbeb; }
+.demo-box h3 { font-size: .9rem; margin-bottom: 8px; color: #92400e; }
+.demo-box label.radio { display: flex; gap: 8px; align-items: center; font-weight: 500; margin: 4px 0; }
+.demo-box input[type=radio] { width: auto; }
+.demo-accounts { width: 100%; font-size: .82rem; margin-top: 8px; } .demo-accounts td { padding: 5px 6px; border: 0; }
+.demo-accounts button { all: unset; cursor: pointer; color: var(--primary); }
+.err-page { text-align: center; padding: 70px 20px; } .err-page .code { font-size: 5rem; font-weight: 800; color: var(--primary); }
+
+/* ---------- адаптивті ---------- */
+@media (max-width: 1000px) {
+  .grid.two, .grid.even, .form-grid, .auth-shell { grid-template-columns: 1fr; }
+  .auth-hero { padding: 32px; } .kv { grid-template-columns: 1fr; gap: 2px; } .kv dd { margin-bottom: 10px; }
+}
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); transition: transform .2s; } .main { margin-left: 0; }
+  .nav-toggle:checked ~ .sidebar { transform: none; box-shadow: 0 0 0 100vmax rgba(15,23,42,.45); }
+  .burger { display: block; } .topbar, .content { padding-left: 16px; padding-right: 16px; } .flash { margin-left: 16px; margin-right: 16px; }
+}
+
+/* =====================================================================
+   ОДНОТОННЫЙ ТЕМА: бір реңк (көгілдір-көк), тек ашықтық пен қанықтық өзгереді
+   ===================================================================== */
+:root {
+  --c-950: #0b1a2a; --c-900: #10253a; --c-800: #173450; --c-700: #1f4468; --c-600: #285a86;
+  --c-500: #3f77a6; --c-400: #6f9bc0; --c-300: #a5c0d8; --c-200: #cddbe8; --c-100: #e6eef5; --c-50: #f4f7fa;
+  --bg: var(--c-50); --card: #ffffff; --ink: var(--c-950); --muted: #5d7388; --line: #dde6ee;
+  --primary: var(--c-600); --primary-d: var(--c-800); --primary-l: var(--c-100);
+  --nav: var(--c-950); --nav-2: var(--c-900); --nav-ink: #b4c6d6;
+  --ok: var(--c-800); --ok-l: var(--c-200); --warn: var(--c-700); --warn-l: var(--c-100);
+  --bad: var(--c-900); --bad-l: #fff; --info: var(--c-600); --info-l: var(--c-100); --gray-l: var(--c-100);
+  --radius: 10px;
+  --shadow: 0 1px 0 rgba(16,37,58,.04), 0 1px 3px rgba(16,37,58,.08), 0 10px 24px -12px rgba(16,37,58,.18);
+}
+body { background: var(--bg); font-feature-settings: "tnum" 1, "cv11" 1; -webkit-font-smoothing: antialiased; }
+.card, .tile { border: 1px solid var(--line); }
+
+/* бүйір панель: тегіс, терең көк */
+.sidebar { background: var(--c-950); border-right: 1px solid rgba(255,255,255,.04); }
+.brand .logo { background: var(--c-600); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+.menu a { border-radius: 8px; }
+.menu a:hover { background: rgba(255,255,255,.06); }
+.menu a.active { background: var(--c-700); color: #fff; box-shadow: inset 3px 0 0 var(--c-300); }
+.side-user { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.06); }
+.avatar { background: var(--c-600); box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+.topbar { background: rgba(244,247,250,.92); }
+.role-pill { background: var(--c-100); color: var(--c-800); border: 1px solid var(--c-200); }
+
+/* карточкалар мен тақырып */
+.hero { background: var(--c-800); background-image: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,0)); box-shadow: var(--shadow); }
+.hero p { color: var(--c-300); }
+.tile, .tile:nth-child(2), .tile:nth-child(3), .tile:nth-child(4) { border-left: 4px solid var(--c-600); }
+.tile .val { color: var(--c-800); }
+th { background: var(--c-50); color: #4d6479; }
+tbody tr:hover { background: var(--c-50); }
+
+/* батырмалар */
+.btn { background: var(--c-600); border-radius: 8px; box-shadow: 0 1px 2px rgba(16,37,58,.25); }
+.btn:hover { background: var(--c-800); }
+.btn.ghost { background: #fff; color: var(--c-800); border-color: var(--c-200); box-shadow: none; }
+.btn.ghost:hover { background: var(--c-50); color: var(--c-900); border-color: var(--c-300); }
+.btn.good { background: var(--c-700); } .btn.good:hover { background: var(--c-900); }
+.btn.danger { background: #fff; color: var(--c-800); border: 1px solid var(--c-300); box-shadow: none; }
+.btn.danger:hover { background: var(--c-100); color: var(--c-950); }
+input:focus, textarea:focus, select:focus { outline: 3px solid var(--c-200); border-color: var(--c-500); }
+input[type=text], input[type=email], input[type=password], input[type=number], textarea, select { border-color: var(--c-200); border-radius: 8px; }
+
+/* мәртебелер: түс емес, тоналдық деңгей */
+.badge { border: 1px solid transparent; }
+.b-submitted { background: #fff; color: var(--c-600); border-color: var(--c-300); }
+.b-reviewed  { background: var(--c-200); color: var(--c-800); }
+.b-accepted, .b-open { background: var(--c-700); color: #fff; }
+.b-rejected  { background: #fff; color: var(--c-700); border: 1px dashed var(--c-400); text-decoration: line-through; }
+.b-closed    { background: var(--c-100); color: #4d6479; border-color: var(--c-200); }
+
+/* прогресс және диаграммалар */
+.meter { background: var(--c-100); }
+.meter.hi i { background: var(--c-700); } .meter.mid i { background: var(--c-500); } .meter.lo i { background: var(--c-300); }
+.track { background: var(--c-100); } .fill { background: var(--c-600); }
+.fill.f-submitted { background: var(--c-300); } .fill.f-reviewed { background: var(--c-500); }
+.fill.f-accepted { background: var(--c-800); } .fill.f-rejected { background: var(--c-400); opacity: .6; }
+
+/* хабарламалар */
+.flash { border-radius: 8px; border-width: 1px 1px 1px 4px; background: #fff; color: var(--c-900); border-color: var(--c-200); }
+.flash.ok { border-left-color: var(--c-600); background: var(--c-100); color: var(--c-900); }
+.flash.error { border-left-color: var(--c-950); background: #fff; color: var(--c-950); font-weight: 600; }
+.note { background: var(--c-100); color: var(--c-800); border: 1px solid var(--c-200); }
+.demo-banner, .demo-banner.vuln, .demo-banner.safe { background: var(--c-100); color: var(--c-800); border-bottom: 1px solid var(--c-200); }
+.demo-banner.vuln { background: var(--c-800); color: #fff; border-color: var(--c-800); }
+
+/* кіру беті */
+.auth-hero { background: var(--c-900); background-image: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,0) 55%); }
+.auth-hero p, .features { color: var(--c-300); }
+.demo-box { background: var(--c-50); border: 1px dashed var(--c-300); }
+.demo-box h3, .demo-box[style] h3 { color: var(--c-800) !important; }
+.demo-box[style] { border-color: var(--c-300) !important; background: #fff !important; }
+.err-page .code { color: var(--c-600); }
+a { color: var(--c-600); } a:hover { color: var(--c-900); }

@@ -1,15 +1,27 @@
 {% extends "base.html" %}
+{% from "_macros.html" import csrf, empty with context %}
+{% block heading %}Оқу курстары{% endblock %}
 {% block content %}
-<h3>Оқыту курстары</h3>
-<table>
-  <tr><th>Курс</th><th>Сипаттамасы</th><th>Сағат</th><th></th></tr>
-  {% for c in courses %}
-  <tr>
-    <td>{{ c.name }}</td><td>{{ c.description }}</td><td>{{ c.duration_hours }}</td>
-    <td>{% if user.role == 'job_seeker' %}
-      <form class="inline" method="post" action="{{ url_for('web.enroll', course_id=c.course_id) }}"><button>Жазылу</button></form>
-    {% endif %}</td>
-  </tr>
-  {% endfor %}
-</table>
+{% if user.role in ('specialist', 'admin') %}
+<div class="card"><h2>Жаңа курс қосу</h2>
+<form method="post" action="{{ url_for('web.course_create') }}">{{ csrf() }}
+  <div class="form-grid"><div><label>Атауы</label><input type="text" name="name" required></div>
+  <div><label>Ұзақтығы (сағат)</label><input type="number" min="1" name="duration_hours" required></div>
+  <div class="full"><label>Сипаттамасы</label><input type="text" name="description"></div></div>
+  <p><button class="btn" type="submit">Қосу</button></p></form></div>
+{% endif %}
+<div class="card"><h2>Барлық курстар</h2>
+{% if courses %}<div class="table-wrap"><table><thead><tr><th>Курс</th><th class="num">Сағат</th><th class="num">Тыңдаушы</th><th></th></tr></thead><tbody>
+  {% for c in courses %}<tr><td><b>{{ c.name }}</b><span class="sub">{{ c.description or '' }}</span></td>
+    <td class="num">{{ c.duration_hours }}</td><td class="num">{{ c.students }}</td>
+    <td class="right">{% if user.role == 'job_seeker' %}{% if c.enrolled %}<span class="badge b-accepted">Жазылғансыз</span>
+      {% else %}<form class="inline-form" method="post" action="{{ url_for('web.course_enroll', course_id=c.course_id) }}">{{ csrf() }}<button class="btn sm good">Жазылу</button></form>{% endif %}
+      {% elif user.role == 'admin' %}<form class="inline-form" method="post" action="{{ url_for('web.course_delete', course_id=c.course_id) }}" >{{ csrf() }}<button class="btn sm danger">Жою</button></form>{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}{{ empty("Курс жоқ", "🎓") }}{% endif %}</div>
+{% if user.role == 'job_seeker' %}
+<div class="card"><h2>Менің курстарым</h2>
+{% if mine %}<ul class="list">{% for c in mine %}<li><b>{{ c.name }}</b> · {{ c.duration_hours }} сағ.
+  <time>{{ c.enrolled_at|fdate }}{% if c.assigned_by_name %} · тағайындаған: {{ c.assigned_by_name }}{% endif %}</time></li>{% endfor %}</ul>
+{% else %}{{ empty("Әзірге курсқа жазылмағансыз", "🎓") }}{% endif %}</div>
+{% endif %}
 {% endblock %}

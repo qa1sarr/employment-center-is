@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block heading %}Қате{% endblock %}
+{% block content %}
+<div class="card err-page"><div class="code">{{ code }}</div><h2>{{ message }}</h2>
+<p><a class="btn" href="{{ url_for('web.dashboard') }}">Басты бетке</a></p></div>
+{% endblock %}

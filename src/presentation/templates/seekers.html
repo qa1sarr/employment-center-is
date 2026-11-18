@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty with context %}
+{% block heading %}Жұмыс іздеушілер{% endblock %}
+{% block content %}
+<form class="toolbar" method="get"><input type="text" name="q" value="{{ q }}" placeholder="Аты немесе дағдысы бойынша…"><button class="btn ghost">Іздеу</button></form>
+<div class="card">
+{% if seekers %}<div class="table-wrap"><table><thead><tr><th>Аты-жөні</th><th>Дағдылар</th><th class="num">Өтінім</th><th class="num">Алынды</th><th class="num">Курс</th></tr></thead><tbody>
+{% for s in seekers %}<tr><td><a href="{{ url_for('web.seeker_detail', seeker_id=s.user_id) }}"><b>{{ s.full_name }}</b></a><span class="sub">{{ s.email }}</span></td>
+  <td>{{ s.skills or '—' }}</td><td class="num">{{ s.applications }}</td><td class="num">{{ s.hired }}</td><td class="num">{{ s.courses }}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}{{ empty("Ешкім табылмады", "🧑‍💼") }}{% endif %}</div>
+{% endblock %}

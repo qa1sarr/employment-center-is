@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, app_badge, meter, empty with context %}
+{% set s = d.seeker %}
+{% block heading %}{{ s.full_name }}{% endblock %}
+{% block content %}
+<div class="grid even">
+  <div class="card"><h2>Байланыс және түйіндеме</h2>
+    <dl class="kv"><dt>Email</dt><dd>{{ s.email }}</dd><dt>Телефон</dt><dd>{{ s.phone or '—' }}</dd>
+      <dt>Білімі</dt><dd>{{ d.resume.education or s.education or '—' }}</dd><dt>Дағдылар</dt><dd>{{ d.resume.skills or s.skills or '—' }}</dd>
+      <dt>Өтілі</dt><dd>{{ d.resume.experience_years if d.resume.experience_years is not none else '—' }} жыл</dd>
+      <dt>Тәжірибе</dt><dd>{{ d.resume.experience or '—' }}</dd></dl></div>
+  <div class="card"><h2>Курс тағайындау</h2>
+    {% if d.available_courses %}<form method="post" action="{{ url_for('web.seeker_assign', seeker_id=s.user_id) }}">{{ csrf() }}
+      <label>Курс</label><select name="course_id">{% for c in d.available_courses %}<option value="{{ c.course_id }}">{{ c.name }} ({{ c.duration_hours }} сағ.)</option>{% endfor %}</select>
+      <p><button class="btn" type="submit">Тағайындау</button></p></form>
+    {% else %}{{ empty("Барлық курс тағайындалған", "🎓") }}{% endif %}
+    <h2 style="margin-top:18px">Курстары</h2>
+    {% if d.courses %}<ul class="list">{% for c in d.courses %}<li>{{ c.name }}<time>{{ c.enrolled_at|fdate }}{% if c.assigned_by_name %} · {{ c.assigned_by_name }}{% endif %}</time></li>{% endfor %}</ul>{% else %}<p class="muted">Курс жоқ</p>{% endif %}
+  </div>
+</div>
+<div class="card"><h2>Өтінімдері</h2>
+{% if d.applications %}<table><thead><tr><th>Вакансия</th><th>Күні</th><th>Сәйкестік</th><th>Мәртебе</th></tr></thead><tbody>
+{% for a in d.applications %}<tr><td>{{ a.vacancy }}<span class="sub">{{ a.company }}</span></td><td>{{ a.app_date|fdate }}</td><td>{{ meter(a.score) }}</td><td>{{ app_badge(a.status) }}</td></tr>{% endfor %}
+</tbody></table>{% else %}{{ empty("Өтінім жоқ") }}{% endif %}</div>
+{% endblock %}

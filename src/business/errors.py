@@ -8,3 +8,7 @@ class AuthError(BusinessError):
 
 class PermissionDenied(BusinessError):
     """Рөлге бұл әрекетке рұқсат жоқ."""
+
+
+class NotFoundError(BusinessError):
+    """Сұралған жазба табылмады."""

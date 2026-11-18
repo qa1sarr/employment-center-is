@@ -1,33 +1,32 @@
 {% extends "base.html" %}
+{% from "_macros.html" import csrf, vac_badge, meter, empty with context %}
+{% block heading %}{{ 'Менің вакансияларым' if user.role == 'employer' else 'Вакансиялар' }}{% endblock %}
 {% block content %}
-<h3>Вакансиялар</h3>
-<form method="get">
-  Іздеу: <input name="q" value="{{ q }}"> <button type="submit">Іздеу</button>
+<form class="toolbar" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="Атауы немесе талап бойынша іздеу…">
+  {% if user.role != 'job_seeker' %}<select name="status"><option value="">Барлық күй</option>
+    {% for k, v in VAC_STATUS.items() %}<option value="{{ k }}" {{ 'selected' if status == k }}>{{ v }}</option>{% endfor %}</select>{% endif %}
+  <button class="btn ghost" type="submit">Іздеу</button><span class="grow" style="flex:1"></span>
+  {% if user.role == 'employer' %}<a class="btn" href="{{ url_for('web.vacancy_new') }}">+ Вакансия жариялау</a>{% endif %}
 </form>
-<table>
-  <tr><th>Вакансия</th><th>Компания</th><th>Жалақы</th><th>Күйі</th><th>Тіркелгендер</th><th>Жұмысқа тұрды</th><th></th></tr>
-  {% for v in vacancies %}
-  <tr>
-    <td>{{ v.title }}</td><td>{{ v.company }}</td><td>{{ v.salary }}</td><td>{{ v.status }}</td>
-    <td>{{ v.applicants }}</td><td>{{ v.hired }}</td>
-    <td>
-      {% if user.role == 'job_seeker' and v.status == 'open' %}
-      <form class="inline" method="post" action="{{ url_for('web.apply', vacancy_id=v.vacancy_id) }}"><button>Өтінім беру</button></form>
+<div class="card">
+{% if vacancies %}<div class="table-wrap"><table>
+  <thead><tr><th>Вакансия</th><th>Жалақы</th>{% if user.role == 'job_seeker' %}<th>Сәйкестік</th>{% else %}<th>Күй</th><th>Өтінім</th><th>Алынды</th>{% endif %}<th></th></tr></thead><tbody>
+  {% for v in vacancies %}<tr>
+    <td><a href="{{ url_for('web.vacancy_detail', vacancy_id=v.vacancy_id) }}"><b>{{ v.title }}</b></a><span class="sub">{{ v.company }} · {{ v.industry or '' }}</span></td>
+    <td class="num">{{ v.salary|money }}</td>
+    {% if user.role == 'job_seeker' %}<td>{{ meter(v.score) }}</td>
+    {% else %}<td>{{ vac_badge(v.status) }}</td><td class="num">{{ v.applicants }}</td><td class="num">{{ v.hired }}</td>{% endif %}
+    <td class="right actions" style="justify-content:flex-end">
+      {% if user.role == 'job_seeker' %}
+        {% if v.applied %}<span class="badge b-reviewed">Өтінім берілген</span>
+        {% else %}<form class="inline-form" method="post" action="{{ url_for('web.apply', vacancy_id=v.vacancy_id) }}">{{ csrf() }}<button class="btn sm good">Өтінім беру</button></form>{% endif %}
+      {% elif user.role in ('employer', 'admin') %}
+        <a class="btn sm ghost" href="{{ url_for('web.vacancy_edit', vacancy_id=v.vacancy_id) }}">Өзгерту</a>
+        <form class="inline-form" method="post" action="{{ url_for('web.vacancy_close' if v.status == 'open' else 'web.vacancy_reopen', vacancy_id=v.vacancy_id) }}">{{ csrf() }}
+          <button class="btn sm danger">{{ 'Жабу' if v.status == 'open' else 'Қайта ашу' }}</button></form>
       {% endif %}
-      {% if user.role in ('employer', 'admin') and v.status == 'open' %}
-      <form class="inline" method="post" action="{{ url_for('web.close_vacancy', vacancy_id=v.vacancy_id) }}"><button>Жабу</button></form>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-{% if user.role == 'employer' %}
-<h3>Жаңа вакансия</h3>
-<form method="post">
-  <p>Атауы: <input name="title"></p>
-  <p>Талаптар: <input name="requirements"></p>
-  <p>Жалақы: <input name="salary"></p>
-  <p><button type="submit">Жариялау</button></p>
-</form>
-{% endif %}
+    </td></tr>{% endfor %}
+</tbody></table></div>{% else %}{{ empty("Вакансия табылмады", "💼") }}{% endif %}
+</div>
 {% endblock %}

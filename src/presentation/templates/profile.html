@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf with context %}
+{% block heading %}Профиль{% endblock %}
+{% block content %}
+<div class="grid even">
+  <div class="card"><h2>Жеке деректер</h2>
+    <dl class="kv">
+      <dt>Email</dt><dd>{{ p.email }}</dd><dt>Рөлі</dt><dd>{{ ROLE_NAMES[p.role] }}</dd>
+      <dt>Тіркелген күні</dt><dd>{{ p.created_at|fdate }}</dd>
+      {% for k, label in [('education','Білімі'),('skills','Дағдылары'),('company_name','Компания'),('industry','Сала'),('department','Бөлім'),('access_level','Қолжетімділік деңгейі')] %}
+        {% if p.details.get(k) is not none and k in p.details %}<dt>{{ label }}</dt><dd>{{ p.details[k] }}</dd>{% endif %}{% endfor %}
+    </dl>
+    <form method="post" action="{{ url_for('web.profile_update') }}" style="margin-top:20px">{{ csrf() }}
+      <div class="form-grid">
+        <div><label>Аты-жөні</label><input type="text" name="full_name" value="{{ p.full_name }}" required></div>
+        <div><label>Телефон</label><input type="text" name="phone" value="{{ p.phone or '' }}"></div>
+      </div><p><button class="btn" type="submit">Сақтау</button></p>
+    </form>
+  </div>
+  <div class="card"><h2>Құпиясөзді өзгерту</h2>
+    <form method="post" action="{{ url_for('web.profile_password') }}">{{ csrf() }}
+      <div class="form-grid">
+        <div class="full"><label>Ағымдағы құпиясөз</label><input type="password" name="current" required></div>
+        <div><label>Жаңа құпиясөз</label><input type="password" name="new" required></div>
+        <div><label>Қайталаңыз</label><input type="password" name="repeat" required></div>
+      </div><p class="hint">Кемінде 6 таңба</p><p><button class="btn" type="submit">Өзгерту</button></p>
+    </form>
+  </div>
+</div>
+{% endblock %}

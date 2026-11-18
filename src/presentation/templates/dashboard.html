@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import app_badge, meter, empty with context %}
+{% block heading %}Басты бет{% endblock %}
+{% block content %}
+<div class="hero"><div class="grow"><h2>Қош келдіңіз, {{ user.full_name }}!</h2>
+<p>Рөліңіз: {{ ROLE_NAMES[user.role] }}</p></div>
+{% if user.role == 'job_seeker' %}<a class="btn ghost" href="{{ url_for('web.vacancies') }}">Вакансияларды қарау</a>
+{% elif user.role == 'employer' %}<a class="btn ghost" href="{{ url_for('web.vacancy_new') }}">+ Вакансия жариялау</a>{% endif %}</div>
+<div class="tiles">{% for t in d.tiles %}<div class="tile"><div class="val">{{ t.value }}</div><div class="lbl">{{ t.label }}</div></div>{% endfor %}</div>
+<div class="grid two">
+  <div class="card"><h2>Соңғы өтінімдер</h2>
+    {% if d.recent %}<div class="table-wrap"><table><thead><tr>
+      {% if user.role != 'job_seeker' %}<th>Үміткер</th>{% endif %}<th>Вакансия</th><th>Мәртебе</th><th>Күні</th></tr></thead><tbody>
+      {% for a in d.recent %}<tr>{% if user.role != 'job_seeker' %}<td>{{ a.applicant }}</td>{% endif %}
+        <td>{{ a.vacancy }}<span class="sub">{{ a.company }}</span></td><td>{{ app_badge(a.status) }}</td><td>{{ a.app_date|fdate }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}{{ empty("Әзірге өтінім жоқ") }}{% endif %}
+  </div>
+  <div>
+    <div class="card"><h2>{{ d.breakdown_title }}</h2>
+      {% set total = d.breakdown.values()|sum %}
+      {% for k, n in d.breakdown.items() %}<div class="bar-row"><span>{{ APP_STATUS[k] }}</span>
+        <div class="track"><div class="fill f-{{ k }}" style="width: {{ (n * 100 / total)|round|int if total else 0 }}%"></div></div><b class="right">{{ n }}</b></div>{% endfor %}
+    </div>
+    <div class="card"><h2>Соңғы хабарламалар</h2>
+      {% if d.notifications %}<ul class="list">{% for n in d.notifications %}<li>{{ n.message }}<time>{{ n.sent_at|fdt }}</time></li>{% endfor %}</ul>
+      {% else %}{{ empty("Хабарлама жоқ", "🔔") }}{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token }}">{% endmacro %}
+{% macro app_badge(s) %}<span class="badge b-{{ s }}">{{ APP_STATUS.get(s, s) }}</span>{% endmacro %}
+{% macro vac_badge(s) %}<span class="badge b-{{ s }}">{{ VAC_STATUS.get(s, s) }}</span>{% endmacro %}
+{% macro meter(score) %}{% if score is none %}<span class="muted">—</span>{% else %}
+<span class="meter {{ 'hi' if score >= 70 else ('mid' if score >= 40 else 'lo') }}"><i style="width: {{ score }}%"></i></span>{{ score }}%{% endif %}{% endmacro %}
+{% macro empty(text, icon="📭") %}<div class="empty"><span class="big">{{ icon }}</span>{{ text }}</div>{% endmacro %}
+{% macro status_form(a) %}
+<form class="inline-form" method="post" action="{{ url_for('web.application_status', application_id=a.application_id) }}">
+  {{ csrf() }}
+  <select class="sm" name="status">
+    {% for k, v in APP_STATUS.items() %}<option value="{{ k }}" {{ 'selected' if k == a.status }}>{{ v }}</option>{% endfor %}
+  </select>
+  <button class="btn sm ghost" type="submit">Сақтау</button>
+</form>
+{% endmacro %}

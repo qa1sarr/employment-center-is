@@ -1,4 +1,3 @@
-# compare.py — бірдей енгізулерді екі нұсқаға беріп, нәтижесін салыстырады.
 from lab11.db_setup import create_demo_db
 from lab11.vulnerable_search import search_vulnerable
 from lab11.secure_search import search_secure
@@ -12,14 +11,12 @@ TESTS = [
     ("Бірнеше команда (DROP TABLE)", "x'; DROP TABLE vacancies; --"),
 ]
 
-
 def run(search, conn, text):
     try:
         query, rows = search(conn, text)
         return rows, None
-    except Exception as e:  # осал нұсқа қате беруі мүмкін
+    except Exception as e:
         return [], "%s: %s" % (type(e).__name__, e)
-
 
 def main():
     for name, text in TESTS:
@@ -27,7 +24,7 @@ def main():
         print("Тест:", name)
         print("Енгізілген мән:", text)
         for label, search in (("ОСАЛ", search_vulnerable), ("ҚАУІПСІЗ", search_secure)):
-            conn = create_demo_db()  # әр тест үшін таза база
+            conn = create_demo_db()
             rows, err = run(search, conn, text)
             print("--- %s нұсқа ---" % label)
             if err:
@@ -37,7 +34,6 @@ def main():
                 for r in rows:
                     print("  ", r)
             conn.close()
-
 
 if __name__ == "__main__":
     main()

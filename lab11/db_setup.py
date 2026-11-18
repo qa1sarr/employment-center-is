@@ -2,6 +2,8 @@
 # Кесте құрылымы «Жұмыспен қамту орталығы» жобасынан алынған (vacancies, users).
 import sqlite3
 
+from lab11.auth import hash_password
+
 
 def create_demo_db():
     conn = sqlite3.connect(":memory:")
@@ -12,7 +14,8 @@ def create_demo_db():
             user_id       INTEGER PRIMARY KEY,
             full_name     TEXT NOT NULL,
             email         TEXT NOT NULL,
-            password_hash TEXT NOT NULL
+            password_hash TEXT NOT NULL,
+            role          TEXT NOT NULL
         )
     """)
     cur.execute("""
@@ -24,12 +27,14 @@ def create_demo_db():
         )
     """)
 
+    # Демо-аккаунттар: aigerim@mail.kz / 123456, bakyt@techno.kz / 123456,
+    # aidos@enbek.kz / admin123 (парольдер SHA-256 хэшімен сақталады)
     cur.executemany(
-        "INSERT INTO users (full_name, email, password_hash) VALUES (?, ?, ?)",
+        "INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)",
         [
-            ("Айгерім Нұрланова", "aigerim@mail.kz", "hash_a1"),
-            ("Бақыт Серіков", "bakyt@techno.kz", "hash_b1"),
-            ("Айдос Әкімов", "aidos@enbek.kz", "hash_admin"),
+            ("Айгерім Нұрланова", "aigerim@mail.kz", hash_password("123456"), "job_seeker"),
+            ("Бақыт Серіков", "bakyt@techno.kz", hash_password("123456"), "employer"),
+            ("Айдос Әкімов", "aidos@enbek.kz", hash_password("admin123"), "admin"),
         ],
     )
     cur.executemany(

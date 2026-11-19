@@ -1,5 +1,3 @@
-"""Классификация (Logistic Regression): өтінім қабылданады (1) ма, қабылданбайды (0) ма?
-Деректер: өз базамыз (applications + resumes + match_results). Белгілер: жұмыс өтілі, сәйкестік балы."""
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LogisticRegression

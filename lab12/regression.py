@@ -1,5 +1,3 @@
-"""Сызықтық регрессия: үміткердің жұмыс өтіліне байланысты ол жұмысқа алынатын вакансия жалақысын болжау.
-Деректер: өз базамыз (applications + resumes + vacancies)."""
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LinearRegression
@@ -8,11 +6,10 @@ from sklearn.model_selection import train_test_split
 
 import ml_data
 
-# Деректер (SQL Server: status = 'accepted')
 data = ml_data.load_salary()
 print("Базадан алынған жазба саны:", len(data))
-X = data[["experience_years"]].values        # x - жұмыс өтілі (жыл)
-y = data["salary"].values                    # y - вакансия жалақысы (тг)
+X = data[["experience_years"]].values
+y = data["salary"].values
 
 # Деректерді бөлу
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

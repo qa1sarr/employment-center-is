@@ -1,7 +1,3 @@
-"""Оқыту үшін демо деректерді ӨЗ базамызға қосады (бар кестелерге: users, resumes, vacancies,
-applications, match_results). Демо жазбалар email-і '@ml.demo' аяқталады.
-  python seed_ml_data.py          - қосу
-  python seed_ml_data.py --clean  - қосылғанды толық өшіру"""
 import hashlib
 import random
 import sys

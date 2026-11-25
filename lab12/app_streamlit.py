@@ -1,5 +1,3 @@
-"""Модельдерді ақпараттық жүйеге интеграциялау (Streamlit).
-Сызықтық регрессия мен классификация ӨЗ базамыздағы деректермен осы жерде үйретіледі және көрсетіледі."""
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -38,17 +36,22 @@ tab1, tab2 = st.tabs(["📈 Сызықтық регрессия", "🎯 Клас
 
 # ---------------------------------------------------------------- регрессия
 with tab1:
-    st.header("Сызықтық регрессия: жұмыс өтілі → вакансия жалақысы")
+    st.header("Көп параметрлі сызықтық регрессия: өтіл + дағдылар саны → вакансия жалақысы")
+    st.markdown("**Екі параметр (белгі):** x₁ — жұмыс өтілі (жыл), x₂ — түйіндемедегі дағдылар саны. "
+                "**Болжанатын мән:** y — жалақы (₸). Деректер: жұмысқа алынған үміткерлер (`accepted`).")
+    st.dataframe(salary.head(8), use_container_width=True)
+
     st.markdown("**1-қадам. Деректерді бөлу.** Оқыту жиыны — модельді үйретуге, тест жиыны — тексеруге.")
     a, b, c = st.columns(3)
     a.metric("Барлығы", len(reg["X"]))
     b.metric("Оқыту жиыны", len(reg["X_train"]))
     c.metric("Тест жиыны", len(reg["X_test"]))
 
-    st.markdown("**2-қадам. Үйрету** — `LinearRegression().fit(X_train, y_train)`: ең кіші квадраттар әдісі түзуді табады.")
-    st.latex(r"y = Weight \cdot x + Bias")
-    st.success(f"Weight = {reg['weight']:,.0f} ₸ (әр жыл өтілге қосылатын жалақы) · "
-               f"Bias = {reg['bias']:,.0f} ₸ (өтілі жоқ болғандағы жалақы)".replace(",", " "))
+    st.markdown("**2-қадам. Үйрету** — `LinearRegression().fit(X_train, y_train)`: ең кіші квадраттар әдісі жазықтықты табады.")
+    st.latex(r"y = w_1 \cdot өтіл + w_2 \cdot дағдылар + Bias")
+    st.success(f"w₁ (өтіл) = {reg['w_exp']:,.0f} ₸ (әр жыл өтілге) · "
+               f"w₂ (дағдылар) = {reg['w_skills']:,.0f} ₸ (әр дағдыға) · "
+               f"Bias = {reg['bias']:,.0f} ₸".replace(",", " "))
 
     st.markdown("**3-қадам. Сапаны бағалау** (тест жиынында).")
     m1, m2, m3 = st.columns(3)
@@ -56,29 +59,48 @@ with tab1:
     m2.metric("MSE", f"{reg['mse']:,.0f}".replace(",", " "))
     m3.metric("R²", f"{reg['r2']:.3f}")
 
-    fig = Figure(figsize=(7, 4.2))
-    ax = fig.subplots()
-    ax.scatter(reg["X_train"], reg["y_train"], label="Оқыту жиыны", alpha=.7)
-    ax.scatter(reg["X_test"], reg["y_test"], label="Тест жиыны", color="orange", edgecolor="black")
-    xs = np.linspace(reg["X"].min(), reg["X"].max(), 50).reshape(-1, 1)
-    ax.plot(xs, reg["model"].predict(xs), color="red", label="Регрессия сызығы")
-    ax.set_xlabel("Жұмыс өтілі (жыл)")
-    ax.set_ylabel("Жалақы (₸)")
-    ax.legend()
-    ax.grid(alpha=.3)
-    st.pyplot(fig)
+    left, right = st.columns(2)
+    with left:
+        fig = Figure(figsize=(5.6, 4.4))
+        ax = fig.subplots()
+        ax.scatter(reg["y_test"], reg["y_pred"], label="Тест жиыны")
+        lims = [min(reg["y_test"].min(), reg["y_pred"].min()), max(reg["y_test"].max(), reg["y_pred"].max())]
+        ax.plot(lims, lims, "r--", label="Идеал болжам (y = x)")
+        ax.set_xlabel("Нақты жалақы (₸)")
+        ax.set_ylabel("Болжамды жалақы (₸)")
+        ax.set_title("Нақты және болжамды жалақы")
+        ax.legend()
+        ax.grid(alpha=.3)
+        st.pyplot(fig)
+    with right:
+        fig = Figure(figsize=(5.6, 4.4))
+        ax3 = fig.add_subplot(projection="3d")
+        ax3.scatter(reg["X"][:, 0], reg["X"][:, 1], reg["y"], alpha=.6)
+        gx, gy = np.meshgrid(np.linspace(reg["X"][:, 0].min(), reg["X"][:, 0].max(), 10),
+                             np.linspace(reg["X"][:, 1].min(), reg["X"][:, 1].max(), 10))
+        ax3.plot_surface(gx, gy, reg["bias"] + reg["w_exp"] * gx + reg["w_skills"] * gy, color="red", alpha=.3)
+        ax3.set_xlabel("Өтіл (жыл)")
+        ax3.set_ylabel("Дағдылар")
+        ax3.set_zlabel("Жалақы (₸)")
+        ax3.set_title("Регрессия жазықтығы")
+        st.pyplot(fig)
 
     with st.expander("Тест жиынында: нақты және болжамды жалақы"):
-        table = pd.DataFrame({"Өтіл (жыл)": reg["X_test"].ravel(), "Нақты": reg["y_test"],
-                              "Болжам": reg["y_pred"].round(0)})
+        table = pd.DataFrame({"Өтіл (жыл)": reg["X_test"][:, 0], "Дағдылар": reg["X_test"][:, 1],
+                              "Нақты": reg["y_test"], "Болжам": reg["y_pred"].round(0)})
         table["Қате"] = (table["Болжам"] - table["Нақты"]).round(0)
         st.dataframe(table, use_container_width=True)
 
-    st.markdown("**4-қадам. Жаңа мәнді болжау.**")
-    years = st.slider("Жұмыс өтілі (жыл)", 0.0, 12.0, 6.5, 0.5, key="years")
+    st.markdown("**4-қадам. Нақты екі параметр бойынша болжау.**")
+    p1, p2 = st.columns(2)
+    years = p1.slider("Жұмыс өтілі (жыл)", 0.0, 12.0, 6.0, 0.5, key="years")
+    n_skills = p2.slider("Дағдылар саны", 1, 7, 5, key="n_skills")
     if st.button("Болжау", key="predict_salary"):
-        result = reg["model"].predict([[years]])[0]
-        st.success(f"{years} жыл өтілі бар үміткерге болжамды жалақы: {result:,.0f} ₸".replace(",", " "))
+        result = reg["model"].predict([[years, n_skills]])[0]
+        st.success(f"Өтілі {years} жыл және {n_skills} дағдысы бар үміткерге болжамды жалақы: "
+                   f"{result:,.0f} ₸".replace(",", " "))
+        st.caption(f"Есеп: {reg['w_exp']:,.0f} × {years} + {reg['w_skills']:,.0f} × {n_skills} + "
+                   f"{reg['bias']:,.0f}".replace(",", " "))
 
 # ---------------------------------------------------------------- классификация
 with tab2:

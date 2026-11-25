@@ -1,8 +1,12 @@
+"""Оқыту үшін демо деректерді ӨЗ базамызға қосады (бар кестелерге: users, resumes, vacancies,
+applications, match_results). Демо жазбалар email-і '@ml.demo' аяқталады.
+  python seed_ml_data.py          - қосу
+  python seed_ml_data.py --clean  - қосылғанды толық өшіру"""
 import hashlib
 import random
 import sys
 
-SKILLS = ["Python", "SQL", "Excel", "1С", "Git", "AutoCAD", "SMM", "Логистика", "Бухгалтерия", "Тестілеу"]
+SKILLS = ["Python", "SQL", "Excel", "1С", "Git", "AutoCAD", "SMM", "Логистика", "Бухгалтерия", "Тестілеу", "Java", "Photoshop"]
 DOMAIN = "@ml.demo"
 
 
@@ -17,7 +21,7 @@ def clean(db):
     return len(ids)
 
 
-def seed(db, seekers=80, vacancies=40, seed_value=42):
+def seed(db, seekers=100, vacancies=80, seed_value=42):
     rnd = random.Random(seed_value)
     pw = hashlib.sha256(b"123456").hexdigest()
 
@@ -26,32 +30,34 @@ def seed(db, seekers=80, vacancies=40, seed_value=42):
             "insert into users (full_name, email, phone, password_hash, role) output inserted.user_id values (?, ?, ?, ?, ?)",
             (name, email, None, pw, role), returns_id=True)
 
-    # демо жұмыс беруші және оның вакансиялары: жалақы талап етілетін өтілге байланысты өседі
+    # демо жұмыс беруші және оның вакансиялары: жалақы талап етілетін өтілге ЖӘНЕ талап саны (дағды) өседі
     emp = user("ML Demo ТОО", "employer" + DOMAIN, "employer")
     db.execute("insert into employers (user_id, company_name, industry) values (?, ?, ?)", (emp, "ML Demo ТОО", "IT"))
     vacs = []
     for i in range(vacancies):
         req_exp = round(rnd.uniform(0, 12), 1)
-        salary = round((200_000 + 27_000 * req_exp + rnd.gauss(0, 18_000)) / 1000) * 1000
+        req_n = rnd.randint(1, 7)
+        salary = round((150_000 + 22_000 * req_exp + 15_000 * req_n + rnd.gauss(0, 12_000)) / 1000) * 1000
         vid = db.execute(
             "insert into vacancies (employer_id, title, requirements, salary, status) output inserted.vacancy_id values (?, ?, ?, ?, 'open')",
-            (emp, "Демо вакансия %d" % (i + 1), ", ".join(rnd.sample(SKILLS, 3)), salary), returns_id=True)
-        vacs.append((vid, req_exp))
+            (emp, "Демо вакансия %d" % (i + 1), ", ".join(rnd.sample(SKILLS, req_n)), salary), returns_id=True)
+        vacs.append((vid, req_exp, req_n))
 
     created = 0
     for i in range(seekers):
         exp = round(rnd.uniform(0, 12), 1)
         uid = user("Демо үміткер %d" % (i + 1), "seeker%d%s" % (i + 1, DOMAIN), "job_seeker")
-        skills = ", ".join(rnd.sample(SKILLS, 3))
+        n_skills = rnd.randint(1, 7)
+        skills = ", ".join(rnd.sample(SKILLS, n_skills))
         db.execute("insert into job_seekers (user_id, education, skills) values (?, ?, ?)", (uid, "Жоғары", skills))
         resume = db.execute(
             "insert into resumes (seeker_id, skills, experience_years, experience) output inserted.resume_id values (?, ?, ?, ?)",
             (uid, skills, int(exp), "Демо тәжірибе"), returns_id=True)
-        # 1) өтіліне ең сай вакансияға ӨТІНІМ ҚАБЫЛДАНДЫ (жоғары сәйкестік)
-        best = min(vacs, key=lambda v: abs(v[1] - exp))
+        # 1) өтілі мен дағдыларына ең сай вакансияға ӨТІНІМ ҚАБЫЛДАНДЫ (жоғары сәйкестік)
+        best = min(vacs, key=lambda v: abs(v[1] - exp) / 12 + abs(v[2] - n_skills) / 6)
         # 2) кездейсоқ басқа вакансияға ӨТІНІМ ҚАБЫЛДАНБАДЫ (төмен сәйкестік)
         other = rnd.choice([v for v in vacs if v[0] != best[0]])
-        for (vid, _), status, mean, sd in ((best, "accepted", 84, 8), (other, "rejected", 58, 11)):
+        for (vid, _, _), status, mean, sd in ((best, "accepted", 84, 8), (other, "rejected", 58, 11)):
             db.execute("insert into applications (seeker_id, vacancy_id, status) values (?, ?, ?)", (uid, vid, status))
             score = max(0.0, min(100.0, round(rnd.gauss(mean, sd), 2)))
             db.execute("insert into match_results (resume_id, vacancy_id, score, model_version) values (?, ?, ?, 'v1.0')",

@@ -7,7 +7,7 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 SALARY_SQL = (
-    "select r.experience_years as experience_years, v.salary as salary "
+    "select r.experience_years as experience_years, r.skills as skills, v.salary as salary "
     "from applications a "
     "join resumes r on r.seeker_id = a.seeker_id "
     "join vacancies v on v.vacancy_id = a.vacancy_id "
@@ -35,8 +35,11 @@ def _frame(db, sql):
 
 
 def load_salary(db=None):
-    """x = experience_years, y = salary (жұмысқа алынған үміткерлер)."""
-    return _frame(db or get_db(), SALARY_SQL)
+    """x1 = experience_years (өтіл), x2 = skills_count (түйіндемедегі дағдылар саны), y = salary."""
+    df = pd.DataFrame((db or get_db()).query(SALARY_SQL))
+    df["skills_count"] = df["skills"].str.count(",") + 1      # "Python, SQL, Git" -> 3
+    df = df[["experience_years", "skills_count", "salary"]]
+    return df.astype(float)
 
 
 def load_hiring(db=None):
